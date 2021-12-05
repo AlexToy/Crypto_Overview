@@ -90,6 +90,10 @@ def main():
     currencies_list = creation_of_trade_currency_list(transactions_list)
     add_transaction_in_its_currency(transactions_list, currencies_list)
 
+    # Calculation of transactions for all currencies
+    for currency in currencies_list:
+        currency.transactions_overview()
+
     while True:
         print("CHOOSE AN OPTION ")
         print("0 : List of currencies")

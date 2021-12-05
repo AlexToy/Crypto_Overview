@@ -36,55 +36,57 @@ class Currency:
 
     def add_transaction(self, transaction):
         self.transactions.append(transaction)
-        index = len(self.transactions) - 1
 
-        self.date.append(transaction.date)
-        self.side.append(transaction.side)
-        self.price.append(transaction.quantitySell / transaction.quantityBuy)
-        self.quantityBuy.append(transaction.quantityBuy)
-        self.quantitySell.append(transaction.quantitySell)
-        self.currencySell.append(transaction.currencySell)
-        self.transactionNumber.append(transaction.transactionNumber)
+    def transactions_overview(self):
+        for index, transaction in enumerate(self.transactions):
+            self.date.append(transaction.date)
+            self.side.append(transaction.side)
+            self.price.append(transaction.quantitySell / transaction.quantityBuy)
+            self.quantityBuy.append(transaction.quantityBuy)
+            self.quantitySell.append(transaction.quantitySell)
+            self.currencySell.append(transaction.currencySell)
+            self.transactionNumber.append(transaction.transactionNumber)
 
-        # Sell transaction
-        if transaction.side == "SELL":
-            # index = 0 is the first transaction of the currency table
-            if index == 0:
-                print("Error: It's impossible to sell a currency before buying it !")
-                print("Transaction " + self.transactionNumber[index] + "not adding")
-                return
+            # Sell transaction
+            if transaction.side == "SELL":
+                # index = 0 is the first transaction of the currency table
+                if index == 0:
+                    print("Error: It's impossible to sell a currency before buying it !")
+                    print(self.transactionNumber[index])
+                    print("Transaction " + self.transactionNumber[index] + " not adding")
+                    break
 
-            elif index > 0:
-                self.balance.append(self.balance[index - 1] - self.quantityBuy[index])
+                elif index > 0:
+                    self.balance.append(self.balance[index - 1] - self.quantityBuy[index])
 
-                if self.balance[index] == 0:
-                    # Sell 100%
-                    self.average_buy_price.append(0)
+                    if self.balance[index] == 0:
+                        # Sell 100%
+                        self.average_buy_price.append(0)
 
-                elif self.balance[index] != 0:
-                    # Sell x %
-                    self.average_buy_price.append(self.average_buy_price[index - 1])
+                    elif self.balance[index] != 0:
+                        # Sell x %
+                        self.average_buy_price.append(self.average_buy_price[index - 1])
 
-                self.profitRate.append(profit_rate_calculation(self.average_buy_price[index - 1],
-                                                               self.price[index]))
-                self.profit.append(profit_calculation(self.average_buy_price[index - 1], self.price[index],
-                                                      self.quantityBuy[index]))
-                self.profitTotal.append(self.profitTotal[index - 1] + self.profit[index])
+                    self.profitRate.append(profit_rate_calculation(self.average_buy_price[index - 1],
+                                                                   self.price[index]))
+                    self.profit.append(profit_calculation(self.average_buy_price[index - 1], self.price[index],
+                                                          self.quantityBuy[index]))
+                    self.profitTotal.append(self.profitTotal[index - 1] + self.profit[index])
 
-        # Buy transaction
-        elif transaction.side == "BUY":
-            self.profit.append(0)
-            self.profitRate.append(0)
-            if index == 0:
-                self.average_buy_price.append(self.price[index])
-                self.profitTotal.append(0)
-                self.balance.append(self.quantityBuy[index])
-            elif index > 0:
-                self.profitTotal.append(self.profitTotal[index - 1])
-                self.balance.append(self.balance[index - 1] + self.quantityBuy[index])
-                self.average_buy_price.append(avrg_price_purchase(self.average_buy_price[index - 1],
-                                                                  self.balance[index - 1], self.price[index],
-                                                                  self.quantityBuy[index]))
+            # Buy transaction
+            elif transaction.side == "BUY":
+                self.profit.append(0)
+                self.profitRate.append(0)
+                if index == 0:
+                    self.average_buy_price.append(self.price[index])
+                    self.profitTotal.append(0)
+                    self.balance.append(self.quantityBuy[index])
+                elif index > 0:
+                    self.profitTotal.append(self.profitTotal[index - 1])
+                    self.balance.append(self.balance[index - 1] + self.quantityBuy[index])
+                    self.average_buy_price.append(avrg_price_purchase(self.average_buy_price[index - 1],
+                                                                      self.balance[index - 1], self.price[index],
+                                                                      self.quantityBuy[index]))
 
     def print_overview(self):
         print(f'Date                  Side      Price {self.name}/{self.currencySell[0]}     Montant {self.name}      '
